@@ -23,7 +23,7 @@ const hotel = () => {
           rating: 4.1,
           ratings: 43,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/druwjzmfmz7qvepq3bkr",
+            "https://www.cookwithmanali.com/wp-content/uploads/2015/07/Restaurant-Style-Recipe-Paneer-Tikka.jpg",
           veg: true,
           bestSeller: false,
           quantity: 1,
@@ -37,7 +37,7 @@ const hotel = () => {
           rating: 4.3,
           ratings: 34,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/ry3c3f518z10t4olu4l7",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: false,
           bestSeller: true,
           quantity: 1,
@@ -51,7 +51,7 @@ const hotel = () => {
           rating: 4.5,
           ratings: 56,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/fsitbray4gq1kxcndqqx",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: true,
           bestSeller: false,
           quantity: 1,
@@ -65,7 +65,7 @@ const hotel = () => {
           rating: 3.8,
           ratings: 22,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/byonwwb8mzxyqluxlqpq",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: true,
           bestSeller: true,
           quantity: 1,
@@ -79,7 +79,7 @@ const hotel = () => {
           rating: 4.5,
           ratings: 45,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/x0jegvlf4h7wrgaaqdqi",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: false,
           bestSeller: true,
           quantity: 1,
@@ -99,7 +99,7 @@ const hotel = () => {
           rating: 4.3,
           ratings: 34,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/akmx533z73jjbq8avy6v",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: false,
           bestSeller: true,
         },
@@ -112,7 +112,7 @@ const hotel = () => {
           rating: 4.3,
           ratings: 52,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/lv6jl9qdscekjmwkxm9l",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: false,
           bestSeller: false,
         },
@@ -125,7 +125,7 @@ const hotel = () => {
           rating: 4.6,
           ratings: 56,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/pycpbzawueci1dvhmkr3",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: true,
           bestSeller: true,
         },
@@ -138,7 +138,7 @@ const hotel = () => {
           rating: 4.5,
           ratings: 48,
           image:
-            "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/xukq8swrwct8usmg4cjv",
+            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
           veg: true,
           bestSeller: false,
         },
