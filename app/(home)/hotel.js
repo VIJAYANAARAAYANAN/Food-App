@@ -1,14 +1,27 @@
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  Animated,
+  Image,
+} from "react-native";
+import React, { useRef, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import Fooditem from "../../components/Fooditem";
+import { useSelector } from "react-redux";
+import Modal from "react-native-modal";
 const hotel = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
+  const cart = useSelector((state) => state.cart.cart);
+  console.log("Items in cart");
+  console.log(cart);
   const menu = [
     {
       id: "20",
@@ -146,107 +159,270 @@ const hotel = () => {
     },
   ];
 
+  const scrollViewRef = useRef(null);
+  const scrollAnim = useRef(new Animated.Value(0)).current;
+  const ITEM_HEIGHT = 650;
+  const scrollToCategory = (index) => {
+    const yOffset = index * ITEM_HEIGHT;
+    Animated.timing(scrollAnim, {
+      toValue: yOffset,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+    scrollViewRef.current.scrollTo({ y: yOffset, animated: true });
+  };
+
+  const [modalVisible, setModalVisible] = useState(false);
   return (
-    <ScrollView style={{ backgroundColor: "white" }}>
-      <View
-        style={{
-          marginTop: 5,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Ionicons
-          onPress={() => router.back()}
-          style={{ padding: 5 }}
-          name="arrow-back"
-          size={24}
-          color="black"
-        />
+    <>
+      <ScrollView ref={scrollViewRef} style={{ backgroundColor: "white" }}>
         <View
           style={{
+            marginTop: 5,
             flexDirection: "row",
             alignItems: "center",
-            paddingHorizontal: 14,
-            gap: 15,
+            justifyContent: "space-between",
           }}
         >
-          <SimpleLineIcons name="camera" size={24} color="black" />
-          <Ionicons name="bookmark-outline" size={24} color="black" />
-          <MaterialCommunityIcons
-            name="share-outline"
+          <Ionicons
+            onPress={() => router.back()}
+            style={{ padding: 5 }}
+            name="arrow-back"
             size={24}
             color="black"
           />
-        </View>
-      </View>
-
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          marginVertical: 12,
-        }}
-      >
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{params?.name}</Text>
-        <Text
-          style={{
-            marginTop: 5,
-            color: "grey",
-            fontWeight: "500",
-            fontSize: 13,
-          }}
-        >
-          North Indian * South Indians * Fast Food * 160 for one
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 4,
-            marginTop: 10,
-          }}
-        >
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: "#006a4e",
-              borderRadius: 5,
-              paddingHorizontal: 4,
-              paddingVertical: 5,
-              gap: 6,
+              paddingHorizontal: 14,
+              gap: 15,
             }}
           >
-            <Text style={{ color: "white", fontSize: 15, fontWeight: "bold" }}>
-              {params?.aggregate_rating}
-            </Text>
-            <AntDesign name="star" size={14} color="white" />
+            <SimpleLineIcons name="camera" size={24} color="black" />
+            <Ionicons name="bookmark-outline" size={24} color="black" />
+            <MaterialCommunityIcons
+              name="share-outline"
+              size={24}
+              color="black"
+            />
           </View>
-          <Text style={{ fontSize: 14, fontWeight: "500", marginLeft: 5 }}>
-            3.2k Ratings
-          </Text>
         </View>
 
         <View
           style={{
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "#d0f0c0",
-            borderRadius: 20,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            marginTop: 12,
+            marginVertical: 12,
           }}
         >
-          <Text>30 - 40 minutes * 6km | Banglore</Text>
+          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+            {params?.name}
+          </Text>
+          <Text
+            style={{
+              marginTop: 5,
+              color: "grey",
+              fontWeight: "500",
+              fontSize: 13,
+            }}
+          >
+            North Indian * South Indians * Fast Food * 160 for one
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 4,
+              marginTop: 10,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: "#006a4e",
+                borderRadius: 5,
+                paddingHorizontal: 4,
+                paddingVertical: 5,
+                gap: 6,
+              }}
+            >
+              <Text
+                style={{ color: "white", fontSize: 15, fontWeight: "bold" }}
+              >
+                {params?.aggregate_rating}
+              </Text>
+              <AntDesign name="star" size={14} color="white" />
+            </View>
+            <Text style={{ fontSize: 14, fontWeight: "500", marginLeft: 5 }}>
+              3.2k Ratings
+            </Text>
+          </View>
+
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#d0f0c0",
+              borderRadius: 20,
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              marginTop: 12,
+            }}
+          >
+            <Text>30 - 40 minutes * 6km | Banglore</Text>
+          </View>
         </View>
+
+        {menu?.map((item, index) => (
+          <Fooditem key={index} item={item} />
+        ))}
+      </ScrollView>
+
+      <View style={{ flexDirection: "row", backgroundColor: "white" }}>
+        {menu?.map((item, index) => (
+          <Pressable
+            onPress={() => scrollToCategory(index)}
+            style={{
+              paddingHorizontal: 7,
+              borderRadius: 5,
+              paddingVertical: 5,
+              marginVertical: 10,
+              marginHorizontal: 10,
+              alignItems: "center",
+              justifyContent: "center",
+              borderColor: "#fd5c63",
+              borderWidth: 1,
+            }}
+          >
+            <Text>{item?.name}</Text>
+          </Pressable>
+        ))}
       </View>
 
-      {menu?.map((item, index) => (
-        <Fooditem key={index} item={item} />
-      ))}
-    </ScrollView>
+      <Pressable
+        onPress={() => setModalVisible(!modalVisible)}
+        style={{
+          backgroundColor: "black",
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          right: 25,
+          bottom: cart?.length > 0 ? 70 : 35,
+        }}
+      >
+        <Ionicons
+          style={{ textAlign: "center" }}
+          name="fast-food-outline"
+          size={24}
+          color="white"
+        />
+        <Text
+          style={{
+            textAlign: "center",
+            color: "white",
+            fontWeight: "500",
+            fontSize: 11,
+            marginTop: 3,
+          }}
+        >
+          Menu
+        </Text>
+      </Pressable>
+
+      <Modal
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(!modalVisible)}
+      >
+        <View
+          style={{
+            backgroundColor: "black",
+            width: 250,
+            height: 190,
+            position: "absolute",
+            bottom: 35,
+            right: 10,
+            borderRadius: 7,
+          }}
+        >
+          {menu?.map((item, index) => (
+            <View
+              style={{
+                padding: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text
+                style={{ color: "#d0d0d0", fontSize: 16, fontWeight: "600" }}
+              >
+                {" "}
+                {item?.name}
+              </Text>
+              <Text
+                style={{ color: "#d0d0d0", fontSize: 16, fontWeight: "600" }}
+              >
+                {item?.items?.length}
+              </Text>
+            </View>
+          ))}
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Image
+              style={{ width: "100%", height: 80, resizeMode: "contain" }}
+              source={{
+                uri: "https://cdn.dribbble.com/userupload/14683000/file/original-a9a8ef8e6c89a6a25ae297b21245680c.jpg?resize=1024x768",
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {cart.length > 0 && (
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: "/cart",
+              params: {
+                name: params.name,
+              },
+            })
+          }
+          style={{
+            backgroundColor: "#fd5c63",
+            paddingHorizontal: 10,
+            paddingVertical: 10,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              color: "white",
+              fontSize: 16,
+              fontWeight: "600",
+            }}
+          >
+            {cart.length} items added
+          </Text>
+          <Text
+            style={{
+              textAlign: "center",
+              color: "white",
+              marginTop: 5,
+              fontWeight: "600",
+            }}
+          >
+            Add items(s) worth 240 to reduce surge fee by Rs 35.
+          </Text>
+        </Pressable>
+      )}
+    </>
   );
 };
 
