@@ -16,7 +16,7 @@ const Order = () => {
   const params = useLocalSearchParams();
   const [tip, setTip] = useState(0);
   const time = moment().format("LT");
-  const mapView = useRef(null); // Corrected 'mapView' with an uppercase 'M'
+  const mapView = useRef(null);
   const [coordinates] = useState([
     {
       latitude: 12.9716,

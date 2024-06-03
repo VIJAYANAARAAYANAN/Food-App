@@ -1,26 +1,29 @@
 import {
+  Alert,
   StyleSheet,
   Text,
   View,
-  Alert,
   ScrollView,
   Pressable,
-  Image,
   TextInput,
+  Image,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import { Octicons } from "@expo/vector-icons";
+import * as LocationGeocoding from "expo-location";
+import { Octicons, Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import Carousel from "../../components/Carousel";
 import Categories from "../../components/categories";
 import Hotel from "../../components/Hotel";
+import { supabase } from "../../supabase";
 
-const HomeScreen = () => {
-  const [locationServiceEnabled, setLocationServiceEnabled] = useState(false);
+const index = () => {
+  const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
   const [displayCurrentAddress, setDisplayCurrentAddress] = useState(
-    "...Fetching location"
+    "fetching your location ..."
   );
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     CheckIfLocationEnabled();
@@ -29,53 +32,57 @@ const HomeScreen = () => {
 
   const CheckIfLocationEnabled = async () => {
     let enabled = await Location.hasServicesEnabledAsync();
+
     if (!enabled) {
       Alert.alert(
-        "Location services not enabled",
-        "Please enable Location to continue",
-        [{ text: "Ok" }],
+        "Location Services not enabled",
+        "Please enable your location services to continue",
+        [{ text: "OK" }],
         { cancelable: false }
       );
     } else {
-      setLocationServiceEnabled(true);
+      setLocationServicesEnabled(true);
     }
   };
 
   const GetCurrentLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    let { status } = await Location.requestBackgroundPermissionsAsync();
+
     if (status !== "granted") {
       Alert.alert(
         "Permission not granted",
-        "Allow app to use location service",
-        [{ text: "Ok" }],
+        "Allow the app to use the location service",
+        [{ text: "OK" }],
         { cancelable: false }
       );
-      return;
     }
 
     const location = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
     });
     console.log(location);
-
-    let { coords } = location;
+    let { coords } = await Location.getCurrentPositionAsync();
     if (coords) {
       const { latitude, longitude } = coords;
+
       let response = await Location.reverseGeocodeAsync({
         latitude,
         longitude,
       });
 
-      if (response.length > 0) {
-        const address = response[0];
-        let formattedAddress = `${address.name}, ${address.postalCode}, ${address.city}`;
-        setDisplayCurrentAddress(formattedAddress);
-      } else {
-        setDisplayCurrentAddress("Unable to determine address");
+      const address = await LocationGeocoding.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+
+      const streetAddress = address[0].name;
+      for (let item of response) {
+        let address = `${item.name}, ${item?.postalCode}, ${item?.city}`;
+
+        setDisplayCurrentAddress(address);
       }
     }
   };
-
   console.log("my address", displayCurrentAddress);
   const recommended = [
     {
@@ -87,7 +94,7 @@ const HomeScreen = () => {
       type: "Andhra",
     },
     {
-      id: 0,
+      id: 1,
       name: "GFC Biriyani",
       image:
         "https://b.zmtcdn.com/data/pictures/0/20844770/f9582144619b80d30566f497a02e2c8d.jpg?output-format=webp&fit=around|771.75:416.25&crop=771.75:416.25;*,*",
@@ -95,27 +102,10 @@ const HomeScreen = () => {
       type: "North Indian",
     },
     {
-      id: 0,
+      id: 2,
       name: "Happiness Dhaba",
       image:
         "https://b.zmtcdn.com/data/reviews_photos/2f1/c66cf9c2c68f652db16f2c0a6188a2f1_1659295848.jpg?fit=around%7C200%3A200&crop=200%3A200%3B%2A%2C%2A",
-      time: "20 - 25",
-      type: "North Indian",
-    },
-
-    {
-      id: 0,
-      name: "Dhall Mix",
-      image:
-        "https://images.pexels.com/photos/209540/pexels-photo-209540.jpeg?auto=compress&cs=tinysrgb&w=600",
-      time: "20 - 25",
-      type: "SouthIndian",
-    },
-    {
-      id: 0,
-      name: "Chatt Dhaba",
-      image:
-        "https://images.pexels.com/photos/2474658/pexels-photo-2474658.jpeg?auto=compress&cs=tinysrgb&w=600",
       time: "20 - 25",
       type: "North Indian",
     },
@@ -483,54 +473,104 @@ const HomeScreen = () => {
       time: "22 min",
     },
   ];
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data, error } = await supabase.from("hotels").select("*");
+        console.log("Data:", data);
+        if (error) {
+          console.error("Error fetching data:", error);
+        } else {
+          setData(data);
+        }
+      } catch (error) {
+        console.error("Error in fetchData:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  console.log("data", data);
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#f8f8f8" }}>
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 12,
-          padding: 10,
+          justifyContent: "center",
+          alignContent: "center",
+          margin: "auto",
         }}
       >
-        <Octicons name="location" size={26} color="#e52850" />
-        <View style={{ flex: 1, marginTop: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "500" }}>Deliver To</Text>
-          <Text style={{ fontSize: 16, color: "grey", marginTop: 3 }}>
-            {displayCurrentAddress}
-          </Text>
-        </View>
-        <Pressable
+        <View
           style={{
-            backgroundColor: "#6cb4ee",
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            justifyContent: "center",
+            width: "90%",
+            justifyContent: "space-between",
+            flexDirection: "row",
             alignItems: "center",
+            marginTop: 10,
           }}
         >
-          <Text style={{ fontWeight: "bold" }}>$</Text>
-        </Pressable>
+          <Text style={{ color: "#e52850", fontSize: 25, fontWeight: "700" }}>
+            Foody
+          </Text>
+
+          <Ionicons name="person" size={24} color="#e52850" />
+        </View>
       </View>
+      <View
+        style={{
+          justifyContent: "center",
+          alignContent: "center",
+          margin: "auto",
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+            padding: 10,
+            width: "96%",
+            marginTop: 10,
+            borderRadius: 30,
+            backgroundColor: "#E52850",
+          }}
+        >
+          <Octicons name="location" size={24} color="white" />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: "bold", color: "white" }}>
+              Deliver To
+            </Text>
+            <Text style={{ color: "white", fontSize: 14, marginTop: 3 }}>
+              {displayCurrentAddress}
+            </Text>
+          </View>
+        </View>
+      </View>
+
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
           borderWidth: 1,
-          borderColor: "#COCOCO",
+          borderColor: "#C0C0C0",
           paddingVertical: 8,
           paddingHorizontal: 10,
           borderRadius: 11,
+          marginTop: 10,
           marginHorizontal: 10,
-          marginVertical: 10,
+          marginBottom: 10,
         }}
       >
-        <TextInput placeholder="Search for food,hotels" />
-        <AntDesign name="search1" size={24} color="#e52b50" />
+        <TextInput placeholder="Search for food, hotels" />
+        <AntDesign name="search1" size={24} color="#E52B50" />
       </View>
+
       <Carousel />
+
       <Categories />
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -540,7 +580,7 @@ const HomeScreen = () => {
               backgroundColor: "white",
               flexDirection: "row",
               margin: 10,
-              borderRadius: 10,
+              borderRadius: 8,
             }}
           >
             <View>
@@ -549,7 +589,8 @@ const HomeScreen = () => {
                   width: 100,
                   height: 100,
                   resizeMode: "cover",
-                  borderRadius: 10,
+                  borderTopLeftRadius: 8,
+                  borderBottomLeftRadius: 7,
                 }}
                 source={{ uri: item?.image }}
               />
@@ -561,8 +602,8 @@ const HomeScreen = () => {
               <Text
                 style={{
                   flex: 1,
-                  marginTop: 5,
-                  color: "grey",
+                  marginTop: 3,
+                  color: "gray",
                   fontWeight: "500",
                 }}
               >
@@ -570,10 +611,10 @@ const HomeScreen = () => {
               </Text>
 
               <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
               >
-                <AntDesign name="clockcircle" size={19} color="green" />
-                <Text>{item?.time}mins</Text>
+                <Ionicons name="time" size={24} color="green" />
+                <Text>{item?.time} mins</Text>
               </View>
             </View>
           </View>
@@ -584,66 +625,69 @@ const HomeScreen = () => {
         style={{
           textAlign: "center",
           marginTop: 7,
-          letterSpacing: 5,
+          letterSpacing: 4,
           marginBottom: 5,
-          color: "grey",
+          color: "gray",
         }}
       >
-        Explore
+        EXPLORE
       </Text>
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {items?.map((items, index) => (
+        {items?.map((item, index) => (
           <View
             key={index}
             style={{
               width: 90,
-              //borderColor: "#e52850",
-              //borderWidth: 1,
+              borderColor: "#E0E0E0",
+              borderWidth: 1,
               paddingVertical: 5,
               paddingHorizontal: 1,
               borderRadius: 5,
               marginLeft: 10,
-              marginVertical: 4,
+              marginVertical: 10,
               alignItems: "center",
-              textAlign: "center",
               justifyContent: "center",
               backgroundColor: "white",
             }}
           >
             <Image
               style={{ width: 50, height: 50 }}
-              source={{ uri: items?.image }}
+              source={{ uri: item?.image }}
             />
-            <Text style={{ fontSize: 13, fontWeigh: "500", marginTop: 6 }}>
-              {items?.name}
+
+            <Text style={{ fontSize: 13, fontWeight: "500", marginTop: 6 }}>
+              {item?.name}
             </Text>
-            <Text style={{ fontSize: 12, color: "grey", marginTop: 3 }}>
-              {" "}
-              {items?.description}
+
+            <Text style={{ fontSize: 12, color: "gray", marginTop: 3 }}>
+              {item?.description}
             </Text>
           </View>
         ))}
       </ScrollView>
+
       <Text
         style={{
           textAlign: "center",
           marginTop: 7,
           letterSpacing: 4,
           marginBottom: 5,
-          color: "grey",
+          color: "gray",
         }}
       >
-        All Restaurants
+        ALL RESTAURANTS
       </Text>
+
       <View style={{ marginHorizontal: 8 }}>
-        {hotels?.map((item, index) => (
-          <Hotel key={index} item={item} />
+        {data?.map((item, index) => (
+          <Hotel key={index} item={item} menu={item?.menu} />
         ))}
       </View>
     </ScrollView>
   );
 };
 
-export default HomeScreen;
+export default index;
 
 const styles = StyleSheet.create({});

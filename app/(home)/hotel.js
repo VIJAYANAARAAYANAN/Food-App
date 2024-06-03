@@ -64,7 +64,7 @@ const hotel = () => {
           rating: 4.5,
           ratings: 56,
           image:
-            "https://www.yummytummyaarthi.com/wp-content/uploads/2023/03/chilli-chicken-dry-1.jpeg",
+            "https://www.cookwithmanali.com/wp-content/uploads/2015/07/Restaurant-Style-Recipe-Paneer-Tikka.jpg",
           veg: true,
           bestSeller: false,
           quantity: 1,
@@ -173,6 +173,8 @@ const hotel = () => {
   };
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const receiveMenu = JSON.parse(params?.menu);
   return (
     <>
       <ScrollView ref={scrollViewRef} style={{ backgroundColor: "white" }}>
@@ -275,13 +277,13 @@ const hotel = () => {
           </View>
         </View>
 
-        {menu?.map((item, index) => (
+        {receiveMenu?.map((item, index) => (
           <Fooditem key={index} item={item} />
         ))}
       </ScrollView>
 
       <View style={{ flexDirection: "row", backgroundColor: "white" }}>
-        {menu?.map((item, index) => (
+        {receiveMenu?.map((item, index) => (
           <Pressable
             onPress={() => scrollToCategory(index)}
             style={{

@@ -18,7 +18,9 @@ const Fooditem = ({ item }) => {
             }}
             key={index}
           >
-            <Text style={{ fontSize: 19, fontWeight: "bold" }}>
+            <Text
+              style={{ fontSize: 19, fontWeight: "bold", color: "#E52850" }}
+            >
               {item?.name} ({item?.items?.length})
             </Text>
             <AntDesign name="down" size={20} color="black" />

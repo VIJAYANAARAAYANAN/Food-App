@@ -7,8 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/foodicon.png",
-      "resizeMode": "contain",
+      "image": "./assets/flog.png",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -16,8 +15,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/fdicon.png",
+        "backgroundColor": "#E52850"
       }
     },
     "web": {

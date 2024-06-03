@@ -24,7 +24,13 @@ const MenuItem = ({ item }) => {
         }}
       >
         <View>
-          <Text style={{ fontSize: 18, fontWeight: "600", width: 220 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "600",
+              width: 220,
+            }}
+          >
             {item?.name}
           </Text>
           <Text style={{ marginTop: 4, fontSize: 15, fontWeight: "500" }}>

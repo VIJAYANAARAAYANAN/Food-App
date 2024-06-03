@@ -3,8 +3,11 @@ import React from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-const Hotel = ({ item }) => {
+const Hotel = ({ item, menu }) => {
   const router = useRouter();
+
+  const menuItem = JSON.stringify(menu);
+
   return (
     <Pressable
       style={{
@@ -24,6 +27,7 @@ const Hotel = ({ item }) => {
             smalladdress: item.smalladdress,
             cuisines: item.cuisines,
             aggregate_rating: item.aggregate_rating,
+            menu: menuItem,
           },
         })
       }
@@ -44,7 +48,7 @@ const Hotel = ({ item }) => {
           justifyContent: "space-between",
         }}
       >
-        <View style={{}}>
+        <View style={{ display: "flex" }}>
           <Text
             style={{
               paddingHorizontal: 10,
@@ -64,7 +68,7 @@ const Hotel = ({ item }) => {
               color: "grey",
             }}
           >
-            North Indian * FastFood * 160 for one
+            {item?.description}
           </Text>
           <Text
             style={{

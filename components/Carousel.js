@@ -16,9 +16,11 @@ const Carousel = () => {
         style={styles.wrapper}
         showsButtons={true}
         autoplay={true}
+        autoplayTimeout={5}
         loop={true}
         dotColor="#13274f"
         activeDotColor="#90a4ae"
+        autoplayDirection={true}
       >
         {images.map((image, index) => (
           <View style={styles.slide} key={index}>
@@ -37,6 +39,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 30,
   },
   wrapper: {
     height: 200,
