@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   Pressable,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
@@ -12,24 +13,100 @@ import { useSafeAreaFrame } from "react-native-safe-area-context";
 import moment from "moment";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import * as LocationGeocoding from "expo-location";
+
+// Function to generate a random location within a 10 km radius
+const generateRandomLocation = (latitude, longitude, radiusInMeters) => {
+  const getRandomOffset = () => (Math.random() < 0.5 ? -1 : 1) * Math.random();
+  const earthRadius = 6379000; // meters
+
+  const maxLatOffset = (radiusInMeters / earthRadius) * (180 / Math.PI);
+  const maxLngOffset =
+    ((radiusInMeters / earthRadius) * (180 / Math.PI)) /
+    Math.cos((latitude * Math.PI) / 180);
+
+  return {
+    latitude: latitude + maxLatOffset * getRandomOffset(),
+    longitude: longitude + maxLngOffset * getRandomOffset(),
+  };
+};
+
 const Order = () => {
   const params = useLocalSearchParams();
   const [tip, setTip] = useState(0);
+  const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
+  const [displayCurrentAddress, setDisplayCurrentAddress] = useState(
+    "Fetching your location..."
+  );
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [coordinates, setCoordinates] = useState([]);
   const time = moment().format("LT");
   const mapView = useRef(null);
-  const [coordinates] = useState([
-    {
-      latitude: 12.9716,
-      longitude: 77.5946,
-    },
-    {
-      latitude: 13.0451,
-      longitude: 77.6269,
-    },
-  ]);
 
   useEffect(() => {
-    mapView.current.fitToCoordinates(coordinates, {
+    CheckIfLocationEnabled();
+    GetCurrentLocation();
+  }, []);
+
+  const CheckIfLocationEnabled = async () => {
+    let enabled = await Location.hasServicesEnabledAsync();
+    if (!enabled) {
+      Alert.alert(
+        "Location Services not enabled",
+        "Please enable your location services to continue",
+        [{ text: "OK" }],
+        { cancelable: false }
+      );
+    } else {
+      setLocationServicesEnabled(true);
+    }
+  };
+
+  const GetCurrentLocation = async () => {
+    let { status } = await Location.requestBackgroundPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission not granted",
+        "Allow the app to use the location service",
+        [{ text: "OK" }],
+        { cancelable: false }
+      );
+      return;
+    }
+
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    });
+
+    const { latitude, longitude } = location.coords;
+    setCurrentLocation({ latitude, longitude });
+
+    let response = await Location.reverseGeocodeAsync({ latitude, longitude });
+    const address = await LocationGeocoding.reverseGeocodeAsync({
+      latitude,
+      longitude,
+    });
+    const streetAddress = address[0].name;
+
+    for (let item of response) {
+      let address = `${item.name}, ${item?.postalCode}, ${item?.city}`;
+      setDisplayCurrentAddress(address);
+    }
+
+    // Generate random hotel locations
+    const hotelLocations = {
+      "Taco Bell": generateRandomLocation(latitude, longitude, 10000),
+      Whopper: generateRandomLocation(latitude, longitude, 10000),
+      "A2b AnandhaBhavan": generateRandomLocation(latitude, longitude, 10000),
+    };
+
+    const hotelName = params?.name;
+    const hotelLocation = hotelLocations[hotelName];
+
+    setCoordinates([{ latitude, longitude }, hotelLocation]);
+
+    mapView.current.fitToCoordinates([{ latitude, longitude }, hotelLocation], {
       edgePadding: {
         top: 50,
         bottom: 50,
@@ -37,7 +114,7 @@ const Order = () => {
         right: 50,
       },
     });
-  }, []);
+  };
 
   return (
     <SafeAreaView>
@@ -64,24 +141,26 @@ const Order = () => {
         </Text>
       </View>
       <MapView
-        ref={mapView} // Corrected 'mapView' with an uppercase 'M'
+        ref={mapView}
         initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
+          latitude: 11.0168,
+          longitude: 76.9558,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
         style={{ width: "100%", height: 400 }}
       >
-        <Marker coordinate={coordinates[0]}></Marker>
-        <Marker coordinate={coordinates[1]}></Marker>
-
-        <Polyline
-          coordinates={coordinates}
-          strokeColor="black"
-          lineDashPattern={[4]}
-          strokeWidth={1}
-        />
+        {coordinates.map((coord, index) => (
+          <Marker key={index} coordinate={coord} />
+        ))}
+        {coordinates.length > 1 && (
+          <Polyline
+            coordinates={coordinates}
+            strokeColor="black"
+            lineDashPattern={[4]}
+            strokeWidth={1}
+          />
+        )}
       </MapView>
       <View
         style={{
@@ -121,7 +200,7 @@ const Order = () => {
                     fontSize: 16,
                     fontWeight: "600",
                     color: "#696969",
-                    marginRight: 10,
+                    marginRight: 30,
                     paddingHorizontal: 2,
                   }}
                 >
@@ -164,7 +243,6 @@ const Order = () => {
                       backgroundColor: "#F5F5F5",
                       marginHorizontal: 10,
                       borderRadius: 7,
-                      // paddingHorizontal: 10,
                     }}
                   >
                     <Text
@@ -236,7 +314,6 @@ const Order = () => {
                     marginRight: 10,
                     position: "absolute",
                     top: 40,
-
                     paddingBottom: 40,
                   }}
                 >

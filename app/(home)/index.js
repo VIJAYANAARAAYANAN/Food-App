@@ -141,20 +141,6 @@ const index = () => {
       id: "0",
       featured_image:
         "https://b.zmtcdn.com/data/pictures/2/18820472/b07647252aae32993047faf13a1cccf4.jpg?fit=around|771.75:416.25&crop=771.75:416.25;*,*",
-      images: [
-        {
-          id: "0",
-          image:
-            "https://b.zmtcdn.com/data/pictures/chains/8/51828/68d04135bbac1e3d5ff5a87d45974da1.jpg?fit=around%7C200%3A200&crop=200%3A200%3B%2A%2C%2A",
-          description: "Desi Burrito • Rs249",
-        },
-        {
-          id: "0",
-          image:
-            "https://b.zmtcdn.com/data/pictures/chains/8/51828/1f8008fc1cec3cd7ea2b559c32b1e642.jpg?fit=around%7C200%3A200&crop=200%3A200%3B%2A%2C%2A",
-          description: "Indain Burrito • Rs149",
-        },
-      ],
       name: "Hauz Khas Social",
       cuisines: "North Indian • Fast Food • 160 for one",
       time: "35 - 40 min • 1Km",

@@ -4,18 +4,18 @@
     "slug": "Food",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/fast-food.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/flog.png",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/food1.png",
+      "backgroundColor": "#fffff"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/fdicon.png",
+        "foregroundImage": "./assets/fast-food.png",
         "backgroundColor": "#E52850"
       }
     },

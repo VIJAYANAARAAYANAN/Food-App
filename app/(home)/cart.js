@@ -420,6 +420,7 @@ const cart = () => {
                 pathname: "/order",
                 params: {
                   name: params?.name,
+                  rating: params?.rating,
                 },
               });
             }}
@@ -438,7 +439,7 @@ const cart = () => {
               <Text
                 style={{ color: "white", fontSize: 15, fontWeight: "bold" }}
               >
-                {total + 95}
+                ₹{total + 95}
               </Text>
               <Text
                 style={{

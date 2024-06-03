@@ -19,7 +19,7 @@ const Fooditem = ({ item }) => {
             key={index}
           >
             <Text
-              style={{ fontSize: 19, fontWeight: "bold", color: "#E52850" }}
+              style={{ fontSize: 20, fontWeight: "bold", color: "#E52850" }}
             >
               {item?.name} ({item?.items?.length})
             </Text>
