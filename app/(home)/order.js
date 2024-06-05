@@ -16,19 +16,33 @@ import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import * as LocationGeocoding from "expo-location";
 
-// Function to generate a random location within a 10 km radius
 const generateRandomLocation = (latitude, longitude, radiusInMeters) => {
-  const getRandomOffset = () => (Math.random() < 0.5 ? -1 : 1) * Math.random();
-  const earthRadius = 6379000; // meters
+  const getRandomOffset = (maxOffset) =>
+    (Math.random() < 0.5 ? -1 : 1) * Math.random() * maxOffset;
+  const earthRadius = 6371000; // Earth's radius in meters
 
   const maxLatOffset = (radiusInMeters / earthRadius) * (180 / Math.PI);
-  const maxLngOffset =
-    ((radiusInMeters / earthRadius) * (180 / Math.PI)) /
-    Math.cos((latitude * Math.PI) / 180);
+  const maxLngOffset = maxLatOffset / Math.cos(latitude * (Math.PI / 180));
+
+  const newLatitude = latitude + getRandomOffset(maxLatOffset);
+  const newLongitude = longitude + getRandomOffset(maxLngOffset);
+
+  if (
+    newLatitude < -90 ||
+    newLatitude > 90 ||
+    newLongitude < -180 ||
+    newLongitude > 180
+  ) {
+    console.error("Invalid generated coordinates:", {
+      newLatitude,
+      newLongitude,
+    });
+    return null;
+  }
 
   return {
-    latitude: latitude + maxLatOffset * getRandomOffset(),
-    longitude: longitude + maxLngOffset * getRandomOffset(),
+    latitude: newLatitude,
+    longitude: newLongitude,
   };
 };
 
@@ -97,23 +111,33 @@ const Order = () => {
     // Generate random hotel locations
     const hotelLocations = {
       "Taco Bell": generateRandomLocation(latitude, longitude, 10000),
-      Whopper: generateRandomLocation(latitude, longitude, 10000),
       "A2b AnandhaBhavan": generateRandomLocation(latitude, longitude, 10000),
+      Whopper: generateRandomLocation(latitude, longitude, 10000),
     };
 
     const hotelName = params?.name;
     const hotelLocation = hotelLocations[hotelName];
 
+    if (!hotelLocation) {
+      Alert.alert("Error", "Invalid hotel location generated");
+      return;
+    }
+
     setCoordinates([{ latitude, longitude }, hotelLocation]);
 
-    mapView.current.fitToCoordinates([{ latitude, longitude }, hotelLocation], {
-      edgePadding: {
-        top: 50,
-        bottom: 50,
-        left: 50,
-        right: 50,
-      },
-    });
+    if (mapView.current) {
+      mapView.current.fitToCoordinates(
+        [{ latitude, longitude }, hotelLocation],
+        {
+          edgePadding: {
+            top: 50,
+            bottom: 50,
+            left: 50,
+            right: 50,
+          },
+        }
+      );
+    }
   };
 
   return (

@@ -13,6 +13,7 @@ const MenuItem = ({ item }) => {
   const [additems, setAddItems] = useState(0);
   const [selected, setSelected] = useState(false);
   const dispatch = useDispatch();
+  console.log(item);
   return (
     <View>
       <Pressable
